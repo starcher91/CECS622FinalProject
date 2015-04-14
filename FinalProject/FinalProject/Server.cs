@@ -9,10 +9,13 @@ namespace FinalProject
     class Server
     {
         public int ID;
+        public Queue<Customer> queue;
+        private Random r;
 
-        public Server(int passedID)
+        public Server(int passedID, Random r)
         {
             this.ID = passedID;
+            this.r = r;
         }
     }
 }
