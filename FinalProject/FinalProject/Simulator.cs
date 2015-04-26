@@ -14,19 +14,17 @@ namespace FinalProject
         public List<Server> servers;
         public List<Customer> outCustomerQueue;
 
-        private static double Clock, MeanInterarrivalTime, MeanServiceTime, SIGMA, LastEventTime, TotalBusy, MaxQueueLength, SumResponseTime;
-        private static long NumberInService, TotalCustomers, NumDepartures, LongService;
+        private static double MeanInterarrivalTime, MeanServiceTime, SIGMA;
 
         private Random r = new Random();
 
-        public Simulator(string Model, int numCust, int numServers, int numTrials, double interarrivalTime, double serviceTime, double sigma)
+        public Simulator(string model, int numCust, int numServers, int numTrials, double interarrivalTime, double serviceTime, double sigma)
         {
-            this.Model = Model;
+            this.Model = model;
             this.numCust = numCust;
             this.numServers = numServers;
             this.numTrials = numTrials;
 
-            Clock = 0.0;
             MeanInterarrivalTime = interarrivalTime;
             MeanServiceTime = serviceTime;
             SIGMA = sigma;
@@ -47,7 +45,7 @@ namespace FinalProject
                 case "MultiServer MultiQueue":
                     MultiServerMultiQueue();
                     break;
-                case "MultiServer w/ SmartQueue":
+                case "MultiServer MultiQueue w/ Smart Queue":
                     MultiServerSmartQueue();
                     break;
             }
@@ -60,8 +58,8 @@ namespace FinalProject
             double rand1 = r.NextDouble();
             double rand2 = r.NextDouble();
 
-            double randStdNormal = Math.Sqrt(Math.Abs(-2.0 * Math.Log(rand1) * Math.Sin(2.0 * Math.PI * rand2)));
-            return mean + sigma * randStdNormal;
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(rand1)) * Math.Sin(2.0 * Math.PI * rand2);
+            return mean + sigma * sigma * randStdNormal;
         }
 
         private List<Customer> generateCustomers()
@@ -105,12 +103,72 @@ namespace FinalProject
 
         private void MultiServerSimulation()
         {
-            
+            servers = new List<Server>();
+            for (int i = 0; i < numServers; i++)
+            {
+                servers.Add(new Server(i));
+            }
+
+            List<Customer> customerQueue = generateCustomers();
+
+            outCustomerQueue = new List<Customer>();
+
+            int modServerIndex;
+            //assign the customers to the server queues
+            for (int i = 0; i < customerQueue.Count; i++)
+            {
+                modServerIndex = i%servers.Count; //iteratively assigns each customer to the next server, and the modulus function wraps it back around to the beginning
+
+                //put customer in server queue, and process
+                servers[modServerIndex].customersServed.Add(servers[modServerIndex].processCustomer(customerQueue[i]));
+
+                //insert customer into final stored list
+                outCustomerQueue.Add(customerQueue[i]);
+            }
         }
 
         private void MultiServerMultiQueue()
         {
+            servers = new List<Server>();
+            for (int i = 0; i < numServers; i++)
+            {
+                servers.Add(new Server(i));
+            }
 
+            //generate customers
+            var customers = generateCustomers();
+
+            //create queues
+            List<List<Customer>> queues = new List<List<Customer>>();
+            for (int i = 0; i < numServers; i++)
+            {
+                queues.Add(new List<Customer>());
+            }
+
+            //add customers to queues
+            int randQueue;
+            for (int i = 0; i < customers.Count; i++)
+            {
+                randQueue = r.Next(0, queues.Count);
+                queues[randQueue].Add(customers[i]);
+            }
+
+            outCustomerQueue = new List<Customer>();
+
+            //assign the customers to the server queues
+            for(int i = 0; i < queues.Count; i++)
+            {
+                for (int j = 0; j < queues[i].Count; j++)
+                {
+                    //process customer
+                    servers[i].processCustomer(queues[i][j]);
+
+                    //add most recently added customer to outCustomerQueue
+                    outCustomerQueue.Add(queues[i][j]);
+                }
+            }
+            //sort for display
+            outCustomerQueue = outCustomerQueue.OrderBy(x => x.ID).ToList();
         }
 
         private void MultiServerSmartQueue()
@@ -124,44 +182,83 @@ namespace FinalProject
             }
 
             //generate customers
-            List<Customer> customerQueue = generateCustomers();
+            var customers = generateCustomers();
+
+            //create queues
+            List<List<Customer>> queues = new List<List<Customer>>();
+            for (int i = 0; i < numServers; i++)
+            {
+                queues.Add(new List<Customer>());
+            }
+
+            //add customers to queues
+            for (int i = 0; i < customers.Count; i++)
+            {
+                queues[i % queues.Count].Add(customers[i]);
+            }
 
             outCustomerQueue = new List<Customer>();
 
-            for (int i = 0; i < customerQueue.Count; i++)
+            bool noneOpen = true;
+            double shortestTime = double.MaxValue;
+            Server nextAvailable = new Server(-1);
+            int randQueue;
+            Customer customer = new Customer(-1);
+            for (int i = 0; i < numCust; i++)
             {
-                //find an open server and add customer to it
-                bool noneOpen = true;
-                double shortestTime = double.MaxValue;
-                Server nextAvailable = new Server(-1);
-                foreach (Server s in servers)
+                //gets next unprocessed customer from a random queue
+                randQueue = r.Next(0, queues.Count);
+                for (int j = 0; j < queues[randQueue].Count; j++)
                 {
-                    if (s.customersServed.Count == 0)
+                    if (!queues[randQueue][j].processed)
                     {
-                        noneOpen = false;
-                        outCustomerQueue.Add(s.processCustomer(customerQueue[i]));
+                        customer = queues[randQueue][j];
                         break;
                     }
-                    else if (s.customersServed[s.customersServed.Count - 1].departureTime < customerQueue[i].arrivalTime)
+                }
+
+                noneOpen = true;
+                foreach (Server s in servers) //every iteration of this loop, a customer is processed by a server
+                {
+                    //checks for empty server queue and customer not having been processed
+                    if (s.customersServed.Count == 0 && !customer.processed)
                     {
                         noneOpen = false;
-                        outCustomerQueue.Add(s.processCustomer(customerQueue[i]));
-                        break;
+                        s.processCustomer(customer);
+                    } //checks for the customer not having been processed, and the departure time of the previous customer being before the arrival time of the current customer
+                    else if (s.customersServed.Count > 1 && !customer.processed)
+                    {
+                        if (s.customersServed[s.customersServed.Count - 1].departureTime < customer.arrivalTime)
+                        {
+                            noneOpen = false;
+                            s.processCustomer(customer);
+                        }
                     }
 
-                    if (s.customersServed[s.customersServed.Count - 1].departureTime - customerQueue[i].arrivalTime < shortestTime)
+                    //checks that the server has customers, else it's the next available server
+                    if (s.customersServed.Count > 0)
+                    {
+                        if (s.customersServed[s.customersServed.Count - 1].departureTime - customer.arrivalTime < shortestTime)
+                        {
+                            nextAvailable = s;
+                            shortestTime = s.customersServed[s.customersServed.Count - 1].departureTime -
+                                           customer.arrivalTime;
+                        }
+                    }
+                    else
                     {
                         nextAvailable = s;
-                        shortestTime = s.customersServed[s.customersServed.Count - 1].departureTime -
-                                       customerQueue[i].arrivalTime;
+                        shortestTime = 0;
                     }
                 }
 
                 if (noneOpen)
                 {
-                    outCustomerQueue.Add(nextAvailable.processCustomer(customerQueue[i]));
+                    nextAvailable.processCustomer(customer);
                 }
+                outCustomerQueue.Add(customer);
             }
+            outCustomerQueue = outCustomerQueue.OrderBy(x => x.arrivalTime).ToList();
         }
         #endregion
     }

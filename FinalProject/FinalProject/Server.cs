@@ -52,6 +52,7 @@ namespace FinalProject
                                                 customer.serviceTime;
             customer.inSystemTime = customer.serviceTime + customer.waitTime;
             customer.serverProcessedID = this.ID;
+            customer.processed = true;
             return customer;
         }
     }
