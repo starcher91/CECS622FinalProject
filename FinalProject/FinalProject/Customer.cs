@@ -8,11 +8,22 @@ namespace FinalProject
 {
     class Customer
     {
-        private int ID;
+        public int ID { get; set; }
+        public double arrivalTime { get; set; }
+        public double serviceTime { get; set; }
+        public double waitTime { get; set; }
+        public double departureTime { get; set; }
+        public double inSystemTime { get; set; }
+        public double serverProcessedID { get; set; }
 
         public Customer(int Id)
         {
             this.ID = Id;
+        }
+
+        public override string ToString()
+        {
+            return ID.ToString();
         }
     }
 }

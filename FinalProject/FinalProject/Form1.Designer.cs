@@ -49,7 +49,15 @@
             this.tb_numTrials = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btn_RunSim = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tb_avgInterarrivalTime = new System.Windows.Forms.TextBox();
+            this.tb_avgServiceTime = new System.Windows.Forms.TextBox();
+            this.tb_sigma = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -263,11 +271,74 @@
             this.btn_RunSim.UseVisualStyleBackColor = true;
             this.btn_RunSim.Click += new System.EventHandler(this.btn_RunSim_Click);
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(269, 177);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(1067, 635);
+            this.dataGridView1.TabIndex = 10;
+            // 
+            // tb_avgInterarrivalTime
+            // 
+            this.tb_avgInterarrivalTime.Location = new System.Drawing.Point(273, 78);
+            this.tb_avgInterarrivalTime.Name = "tb_avgInterarrivalTime";
+            this.tb_avgInterarrivalTime.Size = new System.Drawing.Size(100, 20);
+            this.tb_avgInterarrivalTime.TabIndex = 11;
+            // 
+            // tb_avgServiceTime
+            // 
+            this.tb_avgServiceTime.Location = new System.Drawing.Point(413, 78);
+            this.tb_avgServiceTime.Name = "tb_avgServiceTime";
+            this.tb_avgServiceTime.Size = new System.Drawing.Size(100, 20);
+            this.tb_avgServiceTime.TabIndex = 12;
+            // 
+            // tb_sigma
+            // 
+            this.tb_sigma.Location = new System.Drawing.Point(554, 79);
+            this.tb_sigma.Name = "tb_sigma";
+            this.tb_sigma.Size = new System.Drawing.Size(100, 20);
+            this.tb_sigma.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(265, 59);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Average Interarrival Time";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(410, 62);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(112, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Average Service Time";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(578, 63);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(36, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "Sigma";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(958, 595);
+            this.ClientSize = new System.Drawing.Size(1348, 824);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.tb_sigma);
+            this.Controls.Add(this.tb_avgServiceTime);
+            this.Controls.Add(this.tb_avgInterarrivalTime);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btn_RunSim);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.tb_numTrials);
@@ -282,6 +353,7 @@
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -310,6 +382,13 @@
         private System.Windows.Forms.TextBox tb_numTrials;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btn_RunSim;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.TextBox tb_avgInterarrivalTime;
+        private System.Windows.Forms.TextBox tb_avgServiceTime;
+        private System.Windows.Forms.TextBox tb_sigma;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }
 
