@@ -14,7 +14,7 @@ namespace FinalProject
         public double waitTime { get; set; }
         public double departureTime { get; set; }
         public double inSystemTime { get; set; }
-        public double serverProcessedID { get; set; }
+        public int serverProcessedID { get; set; }
         public bool processed = false;
 
         public Customer(int Id)

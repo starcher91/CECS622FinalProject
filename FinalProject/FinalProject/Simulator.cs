@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -85,6 +86,31 @@ namespace FinalProject
                 customerQueue[i].serviceTime = BoxMuller(MeanServiceTime, SIGMA);
             }
             return customerQueue;
+        }
+
+        private Server nextAvailableServer(Customer customer)
+        {
+            double shortestTime = double.MaxValue;
+            Server nextAvailable = new Server(-1);
+            foreach (Server s in servers)
+            {
+                if (s.customersServed.Count == 0)
+                {
+                    return s;
+                }
+                else if (s.customersServed[s.customersServed.Count - 1].departureTime < customer.arrivalTime)
+                {
+                    return s;
+                }
+
+                if (s.customersServed[s.customersServed.Count - 1].departureTime - customer.arrivalTime < shortestTime)
+                {
+                    nextAvailable = s;
+                    shortestTime = s.customersServed[s.customersServed.Count - 1].departureTime -
+                                   customer.arrivalTime;
+                }
+            }
+            return nextAvailable;
         }
         #endregion
 
@@ -199,15 +225,18 @@ namespace FinalProject
 
             outCustomerQueue = new List<Customer>();
 
-            bool noneOpen = true;
-            double shortestTime = double.MaxValue;
-            Server nextAvailable = new Server(-1);
             int randQueue;
             Customer customer = new Customer(-1);
             for (int i = 0; i < numCust; i++)
             {
-                //gets next unprocessed customer from a random queue
+                //find queue that contains unprocessed customer
                 randQueue = r.Next(0, queues.Count);
+                while (queues[randQueue].TrueForAll(x => x.processed))
+                {
+                    randQueue = r.Next(0, queues.Count);
+                }
+
+                //gets next unprocessed customer from a random queue
                 for (int j = 0; j < queues[randQueue].Count; j++)
                 {
                     if (!queues[randQueue][j].processed)
@@ -217,48 +246,13 @@ namespace FinalProject
                     }
                 }
 
-                noneOpen = true;
-                foreach (Server s in servers) //every iteration of this loop, a customer is processed by a server
-                {
-                    //checks for empty server queue and customer not having been processed
-                    if (s.customersServed.Count == 0 && !customer.processed)
-                    {
-                        noneOpen = false;
-                        s.processCustomer(customer);
-                    } //checks for the customer not having been processed, and the departure time of the previous customer being before the arrival time of the current customer
-                    else if (s.customersServed.Count > 1 && !customer.processed)
-                    {
-                        if (s.customersServed[s.customersServed.Count - 1].departureTime < customer.arrivalTime)
-                        {
-                            noneOpen = false;
-                            s.processCustomer(customer);
-                        }
-                    }
+                //gets next available server, and processes the customer
+                nextAvailableServer(customer).processCustomer(customer);
 
-                    //checks that the server has customers, else it's the next available server
-                    if (s.customersServed.Count > 0)
-                    {
-                        if (s.customersServed[s.customersServed.Count - 1].departureTime - customer.arrivalTime < shortestTime)
-                        {
-                            nextAvailable = s;
-                            shortestTime = s.customersServed[s.customersServed.Count - 1].departureTime -
-                                           customer.arrivalTime;
-                        }
-                    }
-                    else
-                    {
-                        nextAvailable = s;
-                        shortestTime = 0;
-                    }
-                }
-
-                if (noneOpen)
-                {
-                    nextAvailable.processCustomer(customer);
-                }
+                //add to Queue for display
                 outCustomerQueue.Add(customer);
             }
-            outCustomerQueue = outCustomerQueue.OrderBy(x => x.arrivalTime).ToList();
+            outCustomerQueue = outCustomerQueue.OrderBy(x => x.departureTime).ToList();
         }
         #endregion
     }
