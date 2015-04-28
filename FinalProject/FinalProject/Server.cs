@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject
 {
-    class Server
+    public class Server
     {
         public int ID { get; set; }
         public List<Customer> customersServed = new List<Customer>();

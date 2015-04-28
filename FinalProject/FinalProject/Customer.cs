@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject
 {
-    class Customer
+    public class Customer
     {
         public int ID { get; set; }
         public double arrivalTime { get; set; }
@@ -20,6 +20,12 @@ namespace FinalProject
         public Customer(int Id)
         {
             this.ID = Id;
+        }
+
+        public Customer(Customer c)
+        {
+            this.ID = c.ID;
+            this.arrivalTime = c.arrivalTime;
         }
 
         public override string ToString()

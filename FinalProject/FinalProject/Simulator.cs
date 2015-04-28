@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace FinalProject
 {
-    class Simulator
+    public class Simulator
     {
         #region Member Variables/Constructor
         public string Model;
         public int numCust, numServers;
         public List<Server> servers;
         public List<Customer> outCustomerQueue;
+        public List<Customer> inCustomerQueue; 
 
         private static double MeanInterarrivalTime, MeanServiceTime, SIGMA;
 
@@ -62,7 +63,7 @@ namespace FinalProject
             return mean + sigma * sigma * randStdNormal;
         }
 
-        private List<Customer> generateCustomers()
+        public List<Customer> generateCustomers()
         {
             List<Customer> customerQueue = new List<Customer>();
 
@@ -116,7 +117,15 @@ namespace FinalProject
         #region Simulator Methods
         private void SingleServerSimulation()
         {
-            List<Customer> customerQueue = generateCustomers();
+            List<Customer> customerQueue;
+            if (inCustomerQueue == null)
+            {
+                customerQueue = generateCustomers();
+            }
+            else
+            {
+                customerQueue = inCustomerQueue;
+            }
             outCustomerQueue = new List<Customer>(); //instantiate class level variable
             servers = new List<Server>();
             servers.Add(new Server(0)); //instantiate sole server
@@ -151,7 +160,15 @@ namespace FinalProject
                 servers.Add(new Server(i));
             }
 
-            List<Customer> customerQueue = generateCustomers();
+            List<Customer> customerQueue;
+            if (inCustomerQueue == null)
+            {
+                customerQueue = generateCustomers();
+            }
+            else
+            {
+                customerQueue = inCustomerQueue;
+            }
 
             outCustomerQueue = new List<Customer>();
 
@@ -196,7 +213,15 @@ namespace FinalProject
             }
 
             //generate customers
-            var customers = generateCustomers();
+            List<Customer> customers;
+            if (inCustomerQueue == null)
+            {
+                customers = generateCustomers();
+            }
+            else
+            {
+                customers = inCustomerQueue;
+            }
 
             //create queues
             List<List<Customer>> queues = new List<List<Customer>>();
@@ -260,7 +285,15 @@ namespace FinalProject
             }
 
             //generate customers
-            var customers = generateCustomers();
+            List<Customer> customers;
+            if (inCustomerQueue == null)
+            {
+                customers = generateCustomers();
+            }
+            else
+            {
+                customers = inCustomerQueue;
+            }
 
             //create queues
             List<List<Customer>> queues = new List<List<Customer>>();
