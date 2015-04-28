@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,8 @@ namespace FinalProject
         public Results(string Model, int numCust, int numServers, double avgInterarrivalTime, double avgServiceTime, double sigma, int trialNum)
         {
             InitializeComponent();
+            trialNum++;
+            Text += " - Trial " + trialNum;
             Simulator sim = new Simulator(Model, numCust, numServers,
                                             avgInterarrivalTime, avgServiceTime, sigma
                                         );
@@ -28,34 +31,63 @@ namespace FinalProject
             dataGridView1.DataSource = sim.outCustomerQueue.ToArray();
             dataGridView2.DataSource = sim.servers.ToArray();
             bindChart(sim);
-            trialNum++;
-            this.Text += " - Trial " + trialNum;
         }
 
         private void bindChart(Simulator sim)
         {
             chart1.Series.Clear();
+            chart2.Series.Clear();
 
-            chart1.ChartAreas[0].AxisX.Name = "Arrival Time";
-            chart1.ChartAreas[0].AxisY.Name = "Time in System";
+            chart1.Titles.Add("Time In System per Server");
+            chart2.Titles.Add("Service Time per Server");
 
-            foreach (Server s in sim.servers)
+            ChartArea TimeInSystemChartArea = new ChartArea("TimeInSystem");
+            TimeInSystemChartArea.AxisX.Title = "Arrival Time";
+            TimeInSystemChartArea.AxisY.Title = "Time in System";
+            TimeInSystemChartArea.AxisX.Minimum = 0;
+            chart1.ChartAreas.Add(TimeInSystemChartArea);
+
+            for (int i = 0; i < sim.servers.Count; i++)
             {
                 chart1.Series.Add(new Series
                 {
-                    Name = "Server " + s.ID,
-                    ChartType = SeriesChartType.Line
+                    Name = "Server " + sim.servers[i].ID,
+                    ChartType = SeriesChartType.Line,
+                    ChartArea = TimeInSystemChartArea.Name
                 });
             }
 
-            foreach (Series s in chart1.Series)
+            for (int i = 0; i < sim.servers.Count; i++)
             {
-                foreach (Customer c in sim.outCustomerQueue)
+                foreach (Customer c in sim.servers[i].customersServed)
                 {
-                    s.Points.AddXY(c.arrivalTime, c.inSystemTime);
+                    chart1.Series[i].Points.AddXY(c.arrivalTime, c.inSystemTime);
                 }
             }
-            chart1.Series.Invalidate();
+
+            ChartArea serviceTimeChartArea = new ChartArea("ServiceTime");
+            serviceTimeChartArea.AxisX.Title = "Arrival Time";
+            serviceTimeChartArea.AxisY.Title = "Service Time";
+            serviceTimeChartArea.AxisX.Minimum = 0;
+            chart2.ChartAreas.Add(serviceTimeChartArea);
+
+            for (int i = 0; i < sim.servers.Count; i++)
+            {
+                chart2.Series.Add(new Series
+                {
+                    Name = "Server " + sim.servers[i].ID,
+                    ChartType = SeriesChartType.Line,
+                    ChartArea = serviceTimeChartArea.Name
+                });
+            }
+
+            for (int i = 0; i < sim.servers.Count; i++)
+            {
+                foreach (Customer c in sim.servers[i].customersServed)
+                {
+                    chart2.Series[i].Points.AddXY(c.arrivalTime, c.serviceTime);
+                }
+            }
         }
     }
 }
