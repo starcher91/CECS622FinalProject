@@ -42,6 +42,7 @@ namespace FinalProject
                                         );
             sim.runSimulator();
             dataGridView1.DataSource = sim.outCustomerQueue.ToArray();
+            dataGridView2.DataSource = sim.servers.ToArray();
         }
     }
 }

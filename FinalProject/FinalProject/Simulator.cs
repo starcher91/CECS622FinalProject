@@ -125,6 +125,23 @@ namespace FinalProject
             {
                 outCustomerQueue.Add(servers[0].processCustomer(c));
             }
+
+            //calculate stats
+            servers[0].sumServerSpecificStats();
+
+            //calculate in context of whole simulation
+            servers[0].avgWaitTime = servers[0].avgWaitTime/outCustomerQueue.Count;
+            servers[0].probWaiting = servers[0].probWaiting/outCustomerQueue.Count;
+            servers[0].probServerIdle = servers[0].probServerIdle/outCustomerQueue[outCustomerQueue.Count - 1].departureTime;
+            servers[0].avgServiceTime = servers[0].avgServiceTime/outCustomerQueue.Count;
+            servers[0].avgServerUtilization = servers[0].avgServerUtilization/
+                                              outCustomerQueue[outCustomerQueue.Count - 1].departureTime;
+            servers[0].avgTimeBetweenArrivals = servers[0].avgTimeBetweenArrivals/outCustomerQueue.Count;
+            servers[0].avgTimeCustomerSpendsInSystem = servers[0].avgTimeCustomerSpendsInSystem/outCustomerQueue.Count;
+            //no processing needed for throughput
+            servers[0].avgQueueLength = servers[0].avgQueueLength/outCustomerQueue.Count;
+            servers[0].avgNumInSystem = servers[0].avgNumInSystem/(outCustomerQueue.Count - 1);
+            //no processing needed for idle times
         }
 
         private void MultiServerSimulation()
@@ -146,10 +163,28 @@ namespace FinalProject
                 modServerIndex = i%servers.Count; //iteratively assigns each customer to the next server, and the modulus function wraps it back around to the beginning
 
                 //put customer in server queue, and process
-                servers[modServerIndex].customersServed.Add(servers[modServerIndex].processCustomer(customerQueue[i]));
+                servers[modServerIndex].processCustomer(customerQueue[i]);
 
                 //insert customer into final stored list
                 outCustomerQueue.Add(customerQueue[i]);
+            }
+
+            double endTime = outCustomerQueue.Max(x => x.departureTime);
+            //calculate single server stats
+            foreach (Server s in servers)
+            {
+                s.sumServerSpecificStats();
+                s.avgWaitTime = s.avgWaitTime / s.customersServed.Count;
+                s.probWaiting = s.probWaiting / s.customersServed.Count;
+                s.probServerIdle = s.probServerIdle / endTime;
+                s.avgServiceTime = s.avgServiceTime / s.customersServed.Count;
+                s.avgServerUtilization = s.avgServerUtilization /endTime;
+                s.avgTimeBetweenArrivals = s.avgTimeBetweenArrivals / s.customersServed.Count;
+                s.avgTimeCustomerSpendsInSystem = s.avgTimeCustomerSpendsInSystem / s.customersServed.Count;
+                //no processing needed for throughput
+                s.avgQueueLength = s.avgQueueLength/s.customersServed.Count;
+                s.avgNumInSystem = s.avgNumInSystem / s.customersServed.Count;
+                //no processing needed for idle times
             }
         }
 
@@ -195,6 +230,24 @@ namespace FinalProject
             }
             //sort for display
             outCustomerQueue = outCustomerQueue.OrderBy(x => x.ID).ToList();
+
+            double endTime = outCustomerQueue.Max(x => x.departureTime);
+            //calculate single server stats
+            foreach (Server s in servers)
+            {
+                s.sumServerSpecificStats();
+                s.avgWaitTime = s.avgWaitTime / s.customersServed.Count;
+                s.probWaiting = s.probWaiting / s.customersServed.Count;
+                s.probServerIdle = s.probServerIdle / endTime;
+                s.avgServiceTime = s.avgServiceTime / s.customersServed.Count;
+                s.avgServerUtilization = s.avgServerUtilization / endTime;
+                s.avgTimeBetweenArrivals = s.avgTimeBetweenArrivals / s.customersServed.Count;
+                s.avgTimeCustomerSpendsInSystem = s.avgTimeCustomerSpendsInSystem / s.customersServed.Count;
+                //no processing needed for throughput
+                s.avgQueueLength = s.avgQueueLength / s.customersServed.Count;
+                s.avgNumInSystem = s.avgNumInSystem / s.customersServed.Count;
+                //no processing needed for idle times
+            }
         }
 
         private void MultiServerSmartQueue()
@@ -253,6 +306,24 @@ namespace FinalProject
                 outCustomerQueue.Add(customer);
             }
             outCustomerQueue = outCustomerQueue.OrderBy(x => x.departureTime).ToList();
+
+            double endTime = outCustomerQueue.Max(x => x.departureTime);
+            //calculate single server stats
+            foreach (Server s in servers)
+            {
+                s.sumServerSpecificStats();
+                s.avgWaitTime = s.avgWaitTime / s.customersServed.Count;
+                s.probWaiting = s.probWaiting / s.customersServed.Count;
+                s.probServerIdle = s.probServerIdle / endTime;
+                s.avgServiceTime = s.avgServiceTime / s.customersServed.Count;
+                s.avgServerUtilization = s.avgServerUtilization / endTime;
+                s.avgTimeBetweenArrivals = s.avgTimeBetweenArrivals / s.customersServed.Count;
+                s.avgTimeCustomerSpendsInSystem = s.avgTimeCustomerSpendsInSystem / s.customersServed.Count;
+                //no processing needed for throughput
+                s.avgQueueLength = s.avgQueueLength / s.customersServed.Count;
+                s.avgNumInSystem = s.avgNumInSystem / s.customersServed.Count;
+                //no processing needed for idle times
+            }
         }
         #endregion
     }
