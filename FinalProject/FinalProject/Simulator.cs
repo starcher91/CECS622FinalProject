@@ -11,7 +11,7 @@ namespace FinalProject
     {
         #region Member Variables/Constructor
         public string Model;
-        public int numCust, numServers, numTrials;
+        public int numCust, numServers;
         public List<Server> servers;
         public List<Customer> outCustomerQueue;
 
@@ -19,12 +19,11 @@ namespace FinalProject
 
         private Random r = new Random();
 
-        public Simulator(string model, int numCust, int numServers, int numTrials, double interarrivalTime, double serviceTime, double sigma)
+        public Simulator(string model, int numCust, int numServers, double interarrivalTime, double serviceTime, double sigma)
         {
             this.Model = model;
             this.numCust = numCust;
             this.numServers = numServers;
-            this.numTrials = numTrials;
 
             MeanInterarrivalTime = interarrivalTime;
             MeanServiceTime = serviceTime;
