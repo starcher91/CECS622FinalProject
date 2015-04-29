@@ -26,7 +26,7 @@ namespace FinalProject
             tb_numTrials.Text = "1";
             tb_numCust.Text = "100";
             tb_numServers.Text = "2";
-            ddl_QModel.SelectedIndex = 0;
+            ddl_QModel.SelectedIndex = 1;
             tb_avgInterarrivalTime.Text = "4.5";
             tb_avgServiceTime.Text = "3.2";
             tb_sigma.Text = "0.6";
